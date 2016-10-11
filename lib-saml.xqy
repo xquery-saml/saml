@@ -142,15 +142,23 @@ declare function libsaml:verify-saml($saml as element(saml2:Assertion)?) as empt
       ()
 };
 
+declare private function libsaml:get-base-module-directory()
+{
+  xdmp:get-invoked-path() !
+  xdmp:filesystem-filepath(.) !
+  fn:string-join(fn:tokenize(., '/')[1 to last()-1],'/')
+};
+
 declare function libsaml:canonicalize($e as element())
 {
   let $str := xdmp:quote($e)
+  let $path := libsaml:get-base-module-directory()
   return
   xdmp:javascript-eval("
     var str;
 
-    var c14n = require('./js/xml-c14n/index.js')();
-    var DOMParser = require('./js/xmldom/dom-parser').DOMParser;
+    var c14n = require('" || $path || "/js/xml-c14n/index.js')();
+    var DOMParser = require('" || $path || "/js/xmldom/dom-parser').DOMParser;
 
     var doc = new DOMParser().parseFromString(str, 'text/xml');
     var canonicaliser = c14n.createCanonicaliser('http://www.w3.org/2001/10/xml-exc-c14n#');
@@ -172,10 +180,13 @@ declare function libsaml:canonicalize($e as element())
 
 declare function libsaml:verify-sig($pem as xs:string, $msg as xs:string, $sig as xs:string)
 {
+  let $path := libsaml:get-base-module-directory()
+
+  return
   xdmp:javascript-eval("
     var pem, msg, sig;
 
-    var mod = require('./js/jsrsasign/jsrsasign');
+    var mod = require('" || $path || "/js/jsrsasign/jsrsasign');
 
     var x509 = new mod.X509();
     x509.readCertPEM(pem);
@@ -194,10 +205,13 @@ declare function libsaml:verify-sig($pem as xs:string, $msg as xs:string, $sig a
 
 declare function libsaml:base64-digest-to-hex($digest as xs:string)
 {
+  let $path := libsaml:get-base-module-directory()
+
+  return
   xdmp:javascript-eval("
     var digest;
 
-    var mod = require('./js/jsrsasign/jsrsasign');
+    var mod = require('" || $path || "/js/jsrsasign/jsrsasign');
 
     mod.b64tohex(digest);
     ",
