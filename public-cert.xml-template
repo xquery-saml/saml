@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
-<SignatureType xmlns="http://www.w3.org/2000/09/xmldsig#">
-  <KeyInfo>
-    <X509Data>
-      <X509Certificate>
-      </X509Certificate>
-    </X509Data>
-  </KeyInfo>
-</SignatureType>
+<sp:SamlSignature xmlns:sp="saml:project" xmlns="http://www.w3.org/2000/09/xmldsig#">
+  <sp:ModuleDatabase/>
+  <SignatureType>
+    <KeyInfo>
+      <X509Data>
+        <X509Certificate/>
+      </X509Data>
+    </KeyInfo>
+  </SignatureType>
+</sp:SamlSignature>
